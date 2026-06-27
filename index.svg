@@ -4,105 +4,66 @@
     <body xmlns="http://www.w3.org/1999/xhtml" lang="en" style="margin: 0; width: 100%; height: 100%; min-height: 100vh; overflow: auto;">
       <div id="root"></div>
       <style><![CDATA[
-html,
-body,
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
-
-body {
-  margin: 0;
-  background-size: 24px 24px;
-  opacity: 1;
-}
+html, body, #root { width: 100%; min-height: 100vh; }
+body { margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+#container { display: flex; align-items: center; justify-content: center; width: 100%; height: 100vh; }
+.box { background: white; border-radius: 10px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 600px; }
+h1 { color: #333; margin: 0 0 20px 0; font-size: 28px; }
+.input-group { display: flex; gap: 10px; margin: 20px 0; }
+input { flex: 1; padding: 12px 15px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; }
+button { padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; }
+button:hover { background: #764ba2; }
       ]]></style>
       <script><![CDATA[
 (() => {
   const ns = 'http://www.w3.org/1999/xhtml';
   const body = document.querySelector('body');
   if (!body) return;
-  const svgRoot = document.documentElement;
-
-  const head = document.createElementNS(ns, 'head');
-  body.prepend(head);
-
-  const htmlRoot = body.parentElement && body.parentElement.namespaceURI === ns
-    ? body.parentElement
-    : body;
-
-  try {
-    Object.defineProperty(document, 'head', {
-      configurable: true,
-      get() {
-        return head;
-      },
-    });
-  } catch {}
-
-  try {
-    Object.defineProperty(document, 'body', {
-      configurable: true,
-      get() {
-        return body;
-      },
-    });
-  } catch {}
-
-  try {
-    Object.defineProperty(document, 'documentElement', {
-      configurable: true,
-      get() {
-        return htmlRoot;
-      },
-    });
-  } catch {}
-
-  try {
-    Object.defineProperty(svgRoot, 'className', {
-      configurable: true,
-      get() {
-        return svgRoot.getAttribute('class') || '';
-      },
-      set(value) {
-        svgRoot.setAttribute('class', value || '');
-      },
-    });
-  } catch {}
-
-  const originalCreateElement = document.createElement.bind(document);
-  document.createElement = function createElement(tagName, options) {
-    return typeof tagName === 'string'
-      ? document.createElementNS(ns, tagName, options)
-      : originalCreateElement(tagName, options);
+  
+  // Create UI
+  const container = document.createElementNS(ns, 'div');
+  container.id = 'container';
+  
+  const box = document.createElementNS(ns, 'div');
+  box.className = 'box';
+  
+  const title = document.createElementNS(ns, 'h1');
+  title.textContent = '🌐 FCPS Proxy';
+  box.appendChild(title);
+  
+  const inputGroup = document.createElementNS(ns, 'div');
+  inputGroup.className = 'input-group';
+  
+  const input = document.createElementNS(ns, 'input');
+  input.type = 'text';
+  input.placeholder = 'Enter URL (google.com)';
+  inputGroup.appendChild(input);
+  
+  const button = document.createElementNS(ns, 'button');
+  button.textContent = 'Go';
+  button.onclick = () => {
+    let url = input.value.trim();
+    if (!url) return;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+    try {
+      const encoded = btoa(url);
+      window.location.href = '/q/r/' + encoded;
+    } catch(e) { alert('Invalid URL'); }
   };
+  input.addEventListener('keypress', (e) => { if (e.key === 'Enter') button.onclick(); });
+  inputGroup.appendChild(button);
+  
+  box.appendChild(inputGroup);
+  container.appendChild(box);
+  body.appendChild(container);
+  
+  // Register service worker from repofcps
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('https://cdn.jsdelivr.net/gh/thoochso-a11y/repofcps/sw.js').catch(err => {
+      console.log('SW registration from repofcps:', err);
+    });
+  }
 })();
-const headNodes = [
-  { tag: 'meta', attrs: { charset: 'UTF-8' } },
-  { tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml', href: '' } },
-  { tag: 'meta', attrs: { name: 'viewport', content: 'initial-scale=1, width=device-width' } },
-  { tag: 'link', attrs: { rel: 'modulepreload', href: './chunks/settingsStore.CQRFESJb.js', crossorigin: '' } },
-];
-for (const nodeDef of headNodes) {
-  const node = document.createElement(nodeDef.tag);
-  for (const [name, value] of Object.entries(nodeDef.attrs)) node.setAttribute(name, value);
-  document.head.appendChild(node);
-}
-const title = document.createElement('title');
-title.textContent = 'FCPS Education';
-document.head.appendChild(title);
-const analyticsLoader = document.createElement('script');
-analyticsLoader.async = true;
-analyticsLoader.src = 'https://www.googletagmanager.com/gtag/js?id=G-HWLK0PZVBM';
-document.head.appendChild(analyticsLoader);
-const analyticsConfig = document.createElement('script');
-analyticsConfig.textContent = "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-HWLK0PZVBM', { send_page_view: false })";
-document.head.appendChild(analyticsConfig);
-const entryScript = document.createElement('script');
-entryScript.type = 'module';
-entryScript.setAttribute('crossorigin', '');
-entryScript.src = './UqXob4bh.js';
-document.body.appendChild(entryScript);
       ]]></script>
     </body>
   </foreignObject>
