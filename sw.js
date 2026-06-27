@@ -1,0 +1,1 @@
+importScripts("q/c.js"),importScripts("q/e.js"),importScripts("q/d.js");const uv=new UVServiceWorker;async function handleRequest(e){return uv.route(e)?await uv.fetch(e):await fetch(e.request)}self.addEventListener("fetch",e=>e.respondWith(handleRequest(e))),self.addEventListener("message",e=>{"INIT_UV"===e.data.msg&&(self.UVServiceWorker=e.data.UVServiceWorker)});

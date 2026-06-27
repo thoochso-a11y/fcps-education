@@ -1,0 +1,1 @@
+"use strict";(()=>{var c=self.Ultraviolet,U=self.UVClient,k=self.__uv$config,b=self.__uv$cookies;if(typeof b!="string")throw new TypeError("Unable to load global UV data");self.__uv||function(e){self.__uv=e}({WebSocketCommon:c.WebSocketCommon,http:{Client:U},globalObj:self,noop(){}}),self.importScripts("a.js")})()
